@@ -1,0 +1,27 @@
+                                                setup mongodb with next js
+
+1.import the mongodb uri from the env file and check for any error
+2. declare a variable that will store the connection from mongodb because
+next js is running on edge so we don't know whether the connection is alrady established or not
+3.you can get the cached connection from the global object like global.mongoose
+but in global mongoose is not defined so we have to define it in the types.d.ts file
+4. decalre a global variable in the types.d.ts file and inside it make a var mongoose it will be a object
+which will store either the connection or promoise(that the connection is being established) or either null in both and these both will type of Connection and export it
+5.now you cached connection will not show any error now if there is no cached then make it
+6.let cached = global.mongoose;
+7. if (!cached) {
+  cached = global.mongoose = { conn: null, promise: null };
+}
+8.now make a function that will connect to the database and return the connection
+9.first check whether the cached has conn if yes then return it
+10. now check if cached has promoise if not then create one
+    cached.promise = mongoose
+      .connect(MONGODB_URI, opts)
+      .then(() => mongoose.connection);
+
+11.now make a trycatch inside try wait for the cached.promise to return and store it in the cached.conn
+and inside catch first make the cached.promise null and then throw the error
+12. now return the cached.conn
+
+
+
