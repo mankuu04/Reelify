@@ -5,7 +5,6 @@ export default {
   content: [
     "./pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./components/**/*.{js,ts,jsx,tsx,mdx}",
-
     "./app/**/*.{js,ts,jsx,tsx,mdx}",
   ],
   theme: {
@@ -18,7 +17,7 @@ export default {
   },
   plugins: [daisyui],
   daisyui: {
-    theme: ["dark"],
+    themes: ["dark"],
     darkTheme: "dark",
   },
   darkMode: "class",

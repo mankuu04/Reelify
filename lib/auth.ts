@@ -1,9 +1,8 @@
 import { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-import { connectToDatabase } from "./db";
-import User from "@/models/User";
 import bcrypt from "bcryptjs";
-import { async } from "../app/api/auth/register/route";
+import { connectToDatabase } from "./db";
+import UserModel from "../models/User";
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -15,21 +14,24 @@ export const authOptions: NextAuthOptions = {
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) {
-          throw new Error("missing email or password");
+          throw new Error("Missing email or password");
         }
+
         try {
           await connectToDatabase();
-          const user = await User.findOne({ email: credentials.email });
+          const user = await UserModel.findOne({ email: credentials.email });
+
           if (!user) {
-            throw new Error("No user found");
+            throw new Error("No user found with this email");
           }
+
           const isValid = await bcrypt.compare(
             credentials.password,
-            user.password,
+            user.password
           );
 
           if (!isValid) {
-            throw new Error("Invalid Password");
+            throw new Error("Invalid password");
           }
 
           return {
@@ -37,6 +39,7 @@ export const authOptions: NextAuthOptions = {
             email: user.email,
           };
         } catch (error) {
+          console.error("Auth error:", error);
           throw error;
         }
       },
@@ -64,5 +67,5 @@ export const authOptions: NextAuthOptions = {
     strategy: "jwt",
     maxAge: 30 * 24 * 60 * 60,
   },
-  secret: process.env.NEXTAUTH_SECRET
+  secret: process.env.NEXTAUTH_SECRET,
 };

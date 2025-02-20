@@ -1,5 +1,5 @@
-import ImageKit from "imagekit";
 import { NextResponse } from "next/server";
+import ImageKit from "imagekit";
 
 const imagekit = new ImageKit({
   publicKey: process.env.NEXT_PUBLIC_PUBLIC_KEY!,
@@ -9,12 +9,15 @@ const imagekit = new ImageKit({
 
 export async function GET() {
   try {
-    const auththenticationParameters = imagekit.getAuthenticationParameters();
-    return NextResponse.json(auththenticationParameters);
+    const authenticationParameters = imagekit.getAuthenticationParameters();
+    return NextResponse.json(authenticationParameters);
   } catch (error) {
+    console.error("ImageKit authentication error:", error);
     return NextResponse.json(
-      { error: "imagekit auth failed" },
-      { status: 500 },
+      { error: "Authentication failed" },
+      {
+        status: 500,
+      }
     );
   }
 }

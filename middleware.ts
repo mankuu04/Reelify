@@ -1,4 +1,4 @@
-import withAuth from "next-auth/middleware";
+import { withAuth } from "next-auth/middleware";
 import { NextResponse } from "next/server";
 
 export default withAuth(
@@ -10,6 +10,7 @@ export default withAuth(
       authorized: ({ token, req }) => {
         const { pathname } = req.nextUrl;
 
+        // Allow auth-related routes
         if (
           pathname.startsWith("/api/auth") ||
           pathname === "/login" ||
@@ -18,14 +19,17 @@ export default withAuth(
           return true;
         }
 
+        // Public routes
         if (pathname === "/" || pathname.startsWith("/api/videos")) {
           return true;
         }
+        // All other routes require authentication
         return !!token;
       },
     },
-  },
+  }
 );
+
 export const config = {
   matcher: [
     /*
