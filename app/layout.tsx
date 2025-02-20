@@ -7,7 +7,6 @@ const inter = Inter({ subsets: ["latin"] });
 
 export const metadata = {
     title: "Reelify",
-    description: "Demo of ImageKit integration with Next.js",
 };
 
 export default function RootLayout({
