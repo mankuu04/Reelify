@@ -7,17 +7,22 @@ import Video, { IVideo } from "@/models/Video";
 export async function GET() {
   try {
     await connectToDatabase();
-    const videos = await Video.find({}).sort({ createdAt: -1 }).lean();
+    const videos = await Video.find({})
+      .sort({ createdAt: -1 })
+      .limit(20)
+      .lean();
 
-    if (!videos || videos.length === 0) {
-      return NextResponse.json([], { status: 200 });
-    }
+    const response = NextResponse.json(videos || []);
+    response.headers.set(
+      'Cache-Control',
+      'public, s-maxage=10, stale-while-revalidate=59'
+    );
 
-    return NextResponse.json(videos);
+    return response;
   } catch (error) {
     console.error("Error fetching videos:", error);
     return NextResponse.json(
-      { error: "Failed to fetch videos" },
+      { error: "Failed to fetch videos. Please try again later." },
       { status: 500 }
     );
   }
