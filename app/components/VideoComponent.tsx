@@ -1,7 +1,38 @@
 import { IKVideo } from "imagekitio-next";
 import { IVideo } from "@/models/Video";
+import { useEffect, useRef } from "react";
 
 export default function VideoComponent({ video }: { video: IVideo }) {
+    const videoRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        if (!videoRef.current) return;
+
+        const observer = new IntersectionObserver(
+            (entries) => {
+                entries.forEach((entry) => {
+                    // Find the video element within the container
+                    const videoElement = entry.target.querySelector('video');
+                    if (videoElement) {
+                        if (!entry.isIntersecting) {
+                            // Pause the video when it's out of view
+                            videoElement.pause();
+                        }
+                    }
+                });
+            },
+            {
+                threshold: 0.5 // Trigger when 50% of the video is visible/invisible
+            }
+        );
+
+        observer.observe(videoRef.current);
+
+        return () => {
+            observer.disconnect();
+        };
+    }, []);
+
     const handleVideoClick = (e: React.MouseEvent) => {
         e.preventDefault();
         const videoElement = e.currentTarget.querySelector('video');
@@ -56,6 +87,7 @@ export default function VideoComponent({ video }: { video: IVideo }) {
         <div className="card bg-base-300 shadow hover:shadow-lg transition-all duration-300">
             <figure className="relative px-4 pt-4">
                 <div
+                    ref={videoRef}
                     className="relative group w-full cursor-pointer"
                     onClick={handleVideoClick}
                 >
