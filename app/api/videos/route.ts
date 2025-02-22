@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getServerSession } from "next-auth/next";
+import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { connectToDatabase } from "@/lib/db";
 import Video, { IVideo } from "@/models/Video";
@@ -39,22 +39,17 @@ export async function POST(request: NextRequest) {
     await connectToDatabase();
     const body: IVideo = await request.json();
 
-    // Validate required fields
-    if (
-      !body.title ||
-      !body.description ||
-      !body.videoUrl ||
-      !body.thumbnailUrl
-    ) {
+    // Validate required fields (description is now optional)
+    if (!body.title || !body.videoUrl || !body.thumbnailUrl) {
       return NextResponse.json(
         { error: "Missing required fields" },
         { status: 400 }
       );
     }
 
-    // Create new video with default values
     const videoData = {
       ...body,
+      description: body.description || "", // Provide empty string as default
       controls: body.controls ?? true,
       transformation: {
         height: 1920,
